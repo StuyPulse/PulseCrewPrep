@@ -1,59 +1,82 @@
 package com.stuypulse.robot.subsystems;
-
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.stuypulse.robot.constants.Settings;
-
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class Shooter extends SubsystemBase {
+public class Shooter extends SubsystemBase{
+    public int leftMotorPort = 0;
+    public int rightMotorPort = 1;
 
-    private CANSparkMax motor1;
-    private CANSparkMax motor2;
+    private double targetLeftRPM;
+    private double targetRightRPM; 
+ 
+    private CANSparkMax leftMotor;
+    private CANSparkMax rightMotor;
 
-    private RelativeEncoder encoder1;
-    private RelativeEncoder encoder2;
+    private RelativeEncoder leftEncoder;
+    private RelativeEncoder rightEncoder;
 
-    private SimpleMotorFeedforward controller1;
-    private SimpleMotorFeedforward controller2;
-
-    private double shooterSpeed = 100;
+    private SimpleMotorFeedforward leftController;
+    private SimpleMotorFeedforward rightController;
 
     public Shooter() {
-        motor1 = new CANSparkMax(Settings.Shooter.motor1, MotorType.kBrushless);
-        motor2 = new CANSparkMax(Settings.Shooter.motor2, MotorType.kBrushless);
+        leftMotor = new CANSparkMax(leftMotorPort, MotorType.kBrushless);
+        rightMotor = new CANSparkMax(rightMotorPort, MotorType.kBrushless);
 
-        encoder1 = motor1.getEncoder();
-        encoder2 = motor2.getEncoder();
+        leftEncoder = leftMotor.getEncoder();
+        rightEncoder = rightMotor.getEncoder();
 
-        controller1 = new SimpleMotorFeedforward(0, 0);
-        controller2 = new SimpleMotorFeedforward(0, 0);
+        leftController = new SimpleMotorFeedforward(0, 0);
+        rightController = new SimpleMotorFeedforward(0, 0);
     }
 
-    public void shoot() {
-        motor1.set(shooterSpeed);
-        motor2.set(-shooterSpeed);
+    public void shoot(double leftRPM, double rightRPM) {
+        targetLeftRPM = leftRPM;
+        targetRightRPM = rightRPM;
     }
 
     public void shootStop() {
-        motor1.stopMotor();
-        motor2.stopMotor();
+        leftMotor.stopMotor();
+        rightMotor.stopMotor();
     }
 
-    public double getVelocityOne() {
-        return encoder1.getVelocity();
+    public double getLeftVelocity() {
+        return leftEncoder.getVelocity();
     }
 
-    public double getVelocityTwo() {
-        return encoder2.getVelocity();
+    public double getRightVelocity() {
+        return rightEncoder.getVelocity();
+    }
+
+    public double getTargetLeftRPM() {
+        return targetLeftRPM;
+    }
+
+    public double getTargetRightRPM() {
+        return targetRightRPM;
+    }
+
+    public double getLeftVoltage() {
+        return leftMotor.getBusVoltage();
+    }
+
+    public double getRightVoltage() {
+        return rightMotor.getBusVoltage();
     }
 
     @Override
     public void periodic() {
-        motor1.setVoltage(shooterSpeed);
-    }
+        leftMotor.setVoltage(leftController.calculate(targetLeftRPM));
+        rightMotor.setVoltage(rightController.calculate(targetRightRPM));
 
+        SmartDashboard.putNumber("Shooter/Left Velocity", getLeftVelocity());
+        SmartDashboard.putNumber("Shooter/Right Velocity", getRightVelocity());
+        SmartDashboard.putNumber("Shooter/Left Target RPM",getTargetLeftRPM());
+        SmartDashboard.putNumber("Shooter/Right Target RPM", getTargetRightRPM());
+        SmartDashboard.putNumber("Shooter/Left Voltage", getLeftVoltage());
+        SmartDashboard.putNumber("Shooter/Right Voltage", getRightVoltage());
+    }
 }
