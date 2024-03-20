@@ -1,7 +1,6 @@
 package com.stuypulse.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -13,6 +12,10 @@ public class Intake extends SubsystemBase{
 
     private final CANSparkMax motor;
 
+    public Intake getInstance(){
+        return new Intake();
+    }
+    
     public Intake() {
         motor = new CANSparkMax(MOTOR_PORT, MotorType.kBrushless);
     }
