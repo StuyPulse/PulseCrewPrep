@@ -5,9 +5,6 @@
 
 package com.stuypulse.robot.constants;
 
-import com.stuypulse.stuylib.network.SmartBoolean;
-import com.stuypulse.stuylib.network.SmartNumber;
-
 import edu.wpi.first.math.util.Units;
 
 /*-
@@ -18,28 +15,30 @@ import edu.wpi.first.math.util.Units;
  */
 public interface Settings {
 
-     SmartBoolean DEBUG_MODE = new SmartBoolean("Debug Mode", true);
-
+     Boolean DEBUG_MODE = true;
 
     public interface TankDrive {
         // If speed is below this, use quick turn
-        SmartNumber BASE_TURNING_SPEED = new SmartNumber("Driver Settings/Base Turn Speed", 0.45);
+        
+        double BASE_TURNING_SPEED =  0.45;
 
         // Low Pass Filter and deadband for Driver Controls
-        SmartNumber SPEED_DEADBAND = new SmartNumber("Driver Settings/Speed Deadband", 0.00);
-        SmartNumber ANGLE_DEADBAND = new SmartNumber("Driver Settings/Turn Deadband", 0.00);
+       double SPEED_DEADBAND = 0.00;
+       double ANGLE_DEADBAND = 0.00;
 
-        SmartNumber SPEED_POWER = new SmartNumber("Driver Settings/Speed Power", 2.0);
-        SmartNumber ANGLE_POWER = new SmartNumber("Driver Settings/Turn Power", 1.0);
+        double SPEED_POWER = 2.0;
+        double ANGLE_POWER =  1.0;
 
-        SmartNumber SPEED_FILTER = new SmartNumber("DriPver Settings/Speed Filtering", 0.125);
-        SmartNumber ANGLE_FILTER = new SmartNumber("Driver Settings/Turn Filtering", 0.005);
+       double SPEED_FILTER = 0.125;
+       double ANGLE_FILTER = 0.005;
+
+
+        boolean USING_GYRO = true;
 
         // Width of the robot
         // update
         double TRACK_WIDTH = Units.inchesToMeters(26.9);
 
-        boolean USING_GYRO = true;
     }
     
 }
