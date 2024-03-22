@@ -56,6 +56,7 @@ public class SwerveDrive extends SubsystemBase {
 
     // Constants    
     private interface Swerve {
+        //TODO: Change these values to match the actual robot
         double WIDTH = Units.inchesToMeters(26);
         double LENGTH = Units.inchesToMeters(26);
 
@@ -64,7 +65,7 @@ public class SwerveDrive extends SubsystemBase {
         double MAX_MODULE_TURN = 6.28;
 
         public interface FrontRight {
-            // Constants
+            //XXX: Constants to be updated
             String ID = "Front Right";
             Rotation2d ABSOLUTE_OFFSET = Rotation2d.fromDegrees(65.566406);
             Translation2d MODULE_OFFSET = new Translation2d(WIDTH * +0.5, LENGTH * -0.5);
@@ -76,7 +77,7 @@ public class SwerveDrive extends SubsystemBase {
         }
         
         public interface FrontLeft {
-            // Constants
+            //XXX: Constants to be updated
             String ID = "Front Left";
             Rotation2d ABSOLUTE_OFFSET = Rotation2d.fromDegrees(47.197266);
             Translation2d MODULE_OFFSET = new Translation2d(WIDTH * +0.5, LENGTH * +0.5);
@@ -88,7 +89,7 @@ public class SwerveDrive extends SubsystemBase {
         }
 
         public interface BackLeft {
-            // Constants
+            //XXX: Constants to be updated
             String ID = "Back Left";
             Rotation2d ABSOLUTE_OFFSET = Rotation2d.fromDegrees(208.212891);
             Translation2d MODULE_OFFSET = new Translation2d(WIDTH * -0.5, LENGTH * +0.5);
@@ -100,7 +101,7 @@ public class SwerveDrive extends SubsystemBase {
         }
 
         public interface BackRight {
-            // Constants
+            //XXX: Constants to be updated
             String ID = "Back Right";
             Rotation2d ABSOLUTE_OFFSET = Rotation2d.fromDegrees(154.511719);
             Translation2d MODULE_OFFSET = new Translation2d(WIDTH * -0.5, LENGTH * -0.5);
