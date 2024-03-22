@@ -14,6 +14,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
 public class SwerveModule extends SubsystemBase {
@@ -61,6 +62,7 @@ public class SwerveModule extends SubsystemBase {
 
     // Constants
     private interface Swerve {
+        double MODULE_VELOCITY_DEADBAND = 0.02;
         public interface Drive {
             double kP = 0.018327;
             double kI = 0.0;
@@ -114,5 +116,23 @@ public class SwerveModule extends SubsystemBase {
     @Override
     public void periodic() {
         // need to complete writing this without using StuyLib
+       
+        if (Math.abs(driveController.getSetpoint())
+                < Swerve.MODULE_VELOCITY_DEADBAND) {
+            driveMotor.setVoltage(0);
+            turnMotor.setVoltage(0);
+        } else {
+            driveMotor.setVoltage(driveController.calculate(getVelocity(), targetState.speedMetersPerSecond));
+            turnMotor.setVoltage(turnController.calculate(getAngle().getDegrees(), targetState.angle.getDegrees()));
+        } 
+
+        
+        SmartDashboard.putNumber("Swerve/Modules/" + id + "/Drive Current", driveMotor.getOutputCurrent());
+        SmartDashboard.putNumber("Swerve/Modules/" + id + "/Drive Position", driveEncoder.getPosition());
+        SmartDashboard.putNumber("Swerve/Modules/" + id + "/Drive Voltage", driveMotor.getBusVoltage());
+        SmartDashboard.putNumber("Swerve/Modules/" + id + "/Turn Voltage", turnMotor.getBusVoltage());
+        SmartDashboard.putNumber("Swerve/Modules/" + id + "/Turn Current", turnMotor.getOutputCurrent());
+        SmartDashboard.putNumber("Swerve/Modules/" + id + "/Angle Error", turnController.getPositionError());
+        SmartDashboard.putNumber("Swerve/Modules/" + id + "/Raw Encoder Angle", Units.rotationsToDegrees(turnEnoder.getAbsolutePosition().getValueAsDouble()));
     }
 }
