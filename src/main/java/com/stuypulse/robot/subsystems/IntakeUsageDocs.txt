@@ -1,0 +1,132 @@
+--- KRAKEN ---
+
+import com.ctre.phoenix6.hardware.TalonFX;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+public class Intake extends SubsystemBase{
+    private final int DEVICE_NUMBER = 0;
+    private final int ACQUIRE_SPEED = 0;
+
+    private final TalonFX motor;
+
+    private final PowerDistribution powerDistribution;
+
+    public Intake getInstance(){
+        return new Intake();
+    }
+    
+    public Intake() {
+        motor = new TalonFX(DEVICE_NUMBER);
+        powerDistribution = new powerDistribution();
+    }
+
+    public void acquire() {
+        motor.set(ACQUIRE_SPEED * 1);
+    }
+
+    public void deacquire() {
+        motor.set(ACQUIRE_SPEED * -1);
+    }
+
+    public void stop() {
+        motor.stopMotor();
+    }
+    
+    @Override
+    public void periodic() {
+        super.periodic();
+
+        SmartDashboard.putNumber("Intake/Speed", motor.get());
+        SmartDashboard.putNumber("Intake/Current", powerDistribution.getCurrent());
+    }
+}
+
+--- SPARKFLEX ---
+
+import com.revrobotics.CANSparkFlex;
+import com.revrobotics.CANSparkLowLevel.MotorType;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+public class Intake extends SubsystemBase{
+    private final int MOTOR_PORT = 0;
+    private final int ACQUIRE_SPEED = 0;
+
+    private final CANSparkFlex motor;
+
+    public Intake getInstance(){
+        return new Intake();
+    }
+    
+    public Intake() {
+        motor = new CANSparkFlex(MOTOR_PORT, MotorType.kBrushless);
+    }
+
+    public void acquire() {
+        motor.set(ACQUIRE_SPEED * 1);
+    }
+
+    public void deacquire() {
+        motor.set(ACQUIRE_SPEED * -1);
+    }
+
+    public void stop() {
+        motor.stopMotor();
+    }
+    
+    @Override
+    public void periodic() {
+        super.periodic();
+
+        SmartDashboard.putNumber("Intake/Speed", motor.get());
+        SmartDashboard.putNumber("Intake/Current", motor.getOutputCurrent());
+    }
+}
+
+--- VictorSPX ---
+
+import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+public class Intake extends SubsystemBase{
+    private final int DEVICE_NUMBER = 0;
+    private final int ACQUIRE_SPEED = 0;
+
+    private final WPI_VictorSPX motor;
+    
+    private final PowerDistribution powerDistribution;
+
+    public Intake getInstance(){
+        return new Intake();
+    }
+    
+    public Intake() {
+        motor = new WPI_VictorSPX(DEVICE_NUMBER);
+        powerDistribution = new PowerDistribution();
+    }
+
+    public void acquire() {
+        motor.set(ACQUIRE_SPEED);
+    }
+
+    public void deacquire() {
+        motor.set(ACQUIRE_SPEED * -1);
+    }
+
+    public void stop() {
+        motor.stopMotor();
+    }
+    
+    @Override
+    public void periodic() {
+        super.periodic();
+
+        SmartDashboard.putNumber("Intake/Speed", motor.get());
+        SmartDashboard.putNumber("Intake/Current", powerDistribution.getCurrent(DEVICE_NUMBER));
+    }
+}
