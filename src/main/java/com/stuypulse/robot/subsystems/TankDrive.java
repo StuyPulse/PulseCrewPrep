@@ -7,8 +7,10 @@ package com.stuypulse.robot.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
-import com.stuypulse.robot.constants.Motors;
 import com.stuypulse.robot.constants.Motors.CANSparkMaxConfig;
+import com.stuypulse.robot.constants.Motors;
+//import com.stuypulse.robot.constants.Ports;
+import com.stuypulse.robot.constants.Settings;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
