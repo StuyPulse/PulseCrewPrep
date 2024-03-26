@@ -40,5 +40,42 @@ public interface Settings {
         double TRACK_WIDTH = Units.inchesToMeters(26.9);
 
     }
+        public interface Swerve {
+        // between wheel centers
+        double WIDTH = Units.inchesToMeters(20.75);
+        double LENGTH = Units.inchesToMeters(20.75);
+        double CENTER_TO_INTAKE_FRONT = Units.inchesToMeters(13.0);
+
+        double MAX_MODULE_SPEED = 4.9;
+
+        double MODULE_VELOCITY_DEADBAND = 0.05;
+
+        double ALIGN_OMEGA_DEADBAND =  0.05; //"Swerve/Align Omega Deadband"
+
+        
+        
+        public interface Driver {
+
+
+            public interface Drive {
+                double kP = 0.31399; //"Swerve/Drive/PID/kP"
+                double kI = 0.0; 
+                double kD = 0.0;
+
+                double kS = 0.27354;
+                double kV = 2.1022; //"Swerve/Drive/FF/kV"
+                double kA = 0.41251; //"Swerve/Drive/FF/kA"
+            }
+            
     
+            public interface Turn {
+                double DEADBAND = 0.03; //"Driver Settings/Turn/Deadband"
+    
+                double RC = 0.05; //"Driver Settings/Turn/RC"
+                double POWER = 2; //"Driver Settings/Turn/Power"
+    
+                double MAX_TELEOP_TURNING = 6.0; //"Driver Settings/Turn/Max Turning"
+            }
+        }
+    }
 }

@@ -179,8 +179,8 @@ public class SwerveDrive extends SubsystemBase {
         setModuleStates(kinematics.toSwerveModuleStates(speeds));
     }
 
-    public void drive(Translation2d velocity, Rotation2d rotation) {
-        ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(velocity.getX(), -velocity.getY(), -rotation.getRadians(), getPose().getRotation());
+    public void drive(Translation2d velocity, double rotation) {
+        ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(velocity.getX(), -velocity.getY(), -rotation, getPose().getRotation());
         
         Pose2d robotVel = new Pose2d(
             0.02 * speeds.vxMetersPerSecond,
