@@ -1,6 +1,8 @@
 package com.stuypulse.robot.commands;
 
+import com.stuypulse.robot.constants.Settings.Swerve.Driver.Turn;
 import com.stuypulse.robot.subsystems.swerve.SwerveDrive;
+import com.stuypulse.robot.subsystems.swerve.SwerveDrive.Swerve;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -46,24 +48,23 @@ public class SwerveDriveDrive extends Command {
         
         SlewRateLimiter filter = new SlewRateLimiter(0.5); //limits controller inputs to 0.5units/second
 
-        if (speed.getNorm() < 0.05) {
+        if (speed.getNorm() < Swerve.MODULE_VELOCITY_DEADBAND) {
             return new Translation2d();
         }
         else {
-            return new Translation2d(filter.calculate(speed.getX()), filter.calculate(speed.getY())).times(5.55);
+            return new Translation2d(filter.calculate(speed.getX()), filter.calculate(speed.getY())).times(Swerve.MAX_MODULE_SPEED);
         }        
     }
 
     public double filterTurn(double turn) {
         SlewRateLimiter filter = new SlewRateLimiter(0.5);
 
-        if (turn < 0.05) {
+        if (Math.abs(turn) < Turn.DEADBAND) {
             return 0;
         }
         else {
-            return filter.calculate(turn) * 6;
+            return filter.calculate(turn) * Turn.MAX_TELEOP_TURNING;
         }
-        
     }
 }
 

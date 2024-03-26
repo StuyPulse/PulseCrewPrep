@@ -55,7 +55,7 @@ public class SwerveDrive extends SubsystemBase {
     }
 
     // Constants    
-    private interface Swerve {
+    public interface Swerve {
         //TODO: Change these values to match the actual robot
         double WIDTH = Units.inchesToMeters(26);
         double LENGTH = Units.inchesToMeters(26);
