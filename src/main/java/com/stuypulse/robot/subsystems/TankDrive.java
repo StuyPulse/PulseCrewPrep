@@ -17,6 +17,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 // import edu.wpi.first.math.kinematics.Odometry;
@@ -28,7 +29,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class TankDrive extends SubsystemBase {
     
-    // array of right and left motors 
+    public static final double MAX_MODULE_SPEED = 0;
+	// array of right and left motors 
     private final CANSparkMax[] leftMotors;
     private final CANSparkMax[] rightMotors;
 
@@ -58,6 +60,8 @@ public class TankDrive extends SubsystemBase {
     
     
     public TankDrive() {
+
+
         leftMotors = 
             new CANSparkMax[] {
                 new CANSparkMax(LEFT_TOP, MotorType.kBrushless),
@@ -117,6 +121,7 @@ public class TankDrive extends SubsystemBase {
     //     leftEncoder.setDistancePerPulse(distance);
     //     leftEncoder.reset();
     // }
+
 
    /*********************
      * ENCODER FUNCTIONS *
