@@ -15,6 +15,9 @@ public class TankDriveDrive extends Command {
     private TankDrive tank;
     private XboxController driver;
 
+    private final SlewRateLimiter driveLimiter;
+    private final SlewRateLimiter turnLimiter;
+
     double speed;
     double turn;
         
@@ -22,13 +25,16 @@ public class TankDriveDrive extends Command {
         this.tank = TankDrive;
         this.driver = driver;
 
-        speed = filterSpeed(driver.getLeftX());
-        turn = filterTurn(driver.getRightX()); 
+        driveLimiter = new SlewRateLimiter(0.5);
+        turnLimiter = new SlewRateLimiter(0.5);
+
+        speed = 0;
+        turn = 0; 
 
         addRequirements(TankDrive);
     }
 
-     public interface Drivetrain {
+    public interface Drivetrain {
         // If speed is below this, use quick turn
         double BASE_TURNING_SPEED = 0.45; //Driver Settings/Base Turn Speed
 
@@ -81,41 +87,32 @@ public class TankDriveDrive extends Command {
         }
     }
 
-    public double filterSpeed(double speed) {
-        
-        SlewRateLimiter filter = new SlewRateLimiter(0.5); //limits controller inputs to 0.5units/secondMath.abs(speed)   Drivetrain.SPEED_DEADBAND) {Turn.DEADBAND ) {
+    public double filterSpeed(double speed) {        
         if (Math.abs(speed) < Drivetrain.SPEED_DEADBAND) {
             return 0; 
-        }
-        else {
-
-            return SLpow(filter.calculate(speed), Drivetrain.SPEED_POWER);
+        } else {
+            return pow(driveLimiter.calculate(speed), Drivetrain.SPEED_POWER);
         }  
     }
 
     public double filterTurn(double turn) {
-        SlewRateLimiter filter = new SlewRateLimiter(0.5);
-
         if (Math.abs(turn) < Turn.DEADBAND) {
             return 0;
-        }
-        else {
-            return SLpow(filter.calculate(turn), Drivetrain.ANGLE_POWER);
+        } else {
+            return pow(turnLimiter.calculate(turn), Drivetrain.ANGLE_POWER);
         }
     }
 
-    public double SLpow(double value, double expo){
-        if (value < 0) {
-            return Math.pow(value, expo) * -1.0;
-        }
-        else {
-            return Math.pow(value, expo);
-        }
+    public double pow(double value, double expo){
+        if (value < 0) return Math.pow(value, expo) * -1.0;
+        else           return Math.pow(value, expo);
     }
 
     @Override
     public void execute() {
-        tank.curvatureDrive(speed, turn);
+        tank.curvatureDrive(
+            filterSpeed(driver.getLeftX()),
+            filterTurn(driver.getRightX()));
     }
 
     @Override
