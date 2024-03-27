@@ -6,8 +6,12 @@
 package com.stuypulse.robot;
 
 import com.stuypulse.robot.commands.auton.DoNothingAuton;
+import com.stuypulse.robot.commands.auton.PreloadMobility;
+import com.stuypulse.robot.commands.tank.TankDriveDrive;
 import com.stuypulse.robot.constants.Ports;
+import com.stuypulse.robot.subsystems.TankDrive;
 
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -15,11 +19,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 public class RobotContainer {
 
     // Gamepads
-    // public final Gamepad driver = new AutoGamepad(Ports.Gamepad.DRIVER);
+    public final XboxController driver = new XboxController(Ports.Gamepad.DRIVER);
     // public final Gamepad operator = new AutoGamepad(Ports.Gamepad.OPERATOR);
     // replace these with non stuylib controllers
     
     // Subsystem
+    public TankDrive drivetrain = TankDrive.getInstance();
 
     // Autons
     private static SendableChooser<Command> autonChooser = new SendableChooser<>();
@@ -36,13 +41,17 @@ public class RobotContainer {
     /*** DEFAULTS ***/
     /****************/
 
-    private void configureDefaultCommands() {}
+    private void configureDefaultCommands() {
+        drivetrain.setDefaultCommand(new TankDriveDrive(drivetrain, driver));
+    }
 
     /***************/
     /*** BUTTONS ***/
     /***************/
 
-    private void configureButtonBindings() {}
+    private void configureButtonBindings() {
+
+    }
 
     /**************/
     /*** AUTONS ***/
@@ -50,6 +59,7 @@ public class RobotContainer {
 
     public void configureAutons() {
         autonChooser.setDefaultOption("Do Nothing", new DoNothingAuton());
+        autonChooser.addOption("Preload Mobility", new PreloadMobility());
 
         SmartDashboard.putData("Autonomous", autonChooser);
     }
