@@ -7,8 +7,7 @@ package com.stuypulse.robot.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
-import com.stuypulse.robot.constants.Motors;
-//import com.stuypulse.robot.constants.Ports;
+import com.revrobotics.RelativeEncoder;
 import com.stuypulse.robot.constants.Settings;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -17,37 +16,36 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
-// import edu.wpi.first.math.kinematics.Odometry;
-import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class TankDrive extends SubsystemBase {
-    
+    private static TankDrive instance;
+
+    public static TankDrive getInstance() {
+        if (instance == null) {
+            instance = new TankDrive();
+        }
+        return instance;
+    }  
+
     public static final double MAX_MODULE_SPEED = 0;
 	// array of right and left motors 
     private final CANSparkMax[] leftMotors;
     private final CANSparkMax[] rightMotors;
 
-    private final Encoder leftEncoder;
-    private final Encoder rightEncoder;
+    private final RelativeEncoder leftEncoder;
+    private final RelativeEncoder rightEncoder;
 
     // might need to comment this if no navx
     private final AHRS navx;
     private final DifferentialDriveOdometry odometry;
     private final Field2d field;
     private final DifferentialDrive tankDrive;
-
-    //encoder ports
-    private final int LEFT_A = 0;
-    private final int LEFT_B = 1;
-    private final int RIGHT_A = 2;
-    private final int RIGHT_B = 3;
 
     //drivetrain ports
     private final int LEFT_TOP = 0;
@@ -60,7 +58,6 @@ public class TankDrive extends SubsystemBase {
     
     
     public TankDrive() {
-
 
         leftMotors = 
             new CANSparkMax[] {
@@ -81,8 +78,8 @@ public class TankDrive extends SubsystemBase {
             rightMotors[i].follow(rightMotors[0]);
         }
 
-        leftEncoder = new Encoder(LEFT_A, LEFT_B);
-        rightEncoder = new Encoder(RIGHT_A, RIGHT_B);
+        leftEncoder = leftMotors[0].getEncoder();
+        rightEncoder = rightMotors[0].getEncoder();
 
         tankDrive =
             new DifferentialDrive(
@@ -91,48 +88,37 @@ public class TankDrive extends SubsystemBase {
             );
         navx = new AHRS(SPI.Port.kMXP);
 
-        odometry = new DifferentialDriveOdometry(navx.getRotation2d(), leftEncoder.getDistance(), rightEncoder.getDistance());
+        odometry = new DifferentialDriveOdometry(navx.getRotation2d(), leftEncoder.getPosition(), rightEncoder.getPosition());
         field = new Field2d();  
         reset(getPose());
         
-        setMotorConfig(Motors.TankDrive.LEFT, Motors.TankDrive.RIGHT);
+        setMotorConfig(true, false);
     }
 
     private boolean ENCODER_INVERTED = true;
 
-    private void setMotorConfig(Motors.Config left, Motors.Config right) {
-        leftEncoder.setReverseDirection(
-            ENCODER_INVERTED ^ left.INVERTED); 
+    private void setMotorConfig(boolean leftIsInverted, boolean rightIsInverted) {
         for(CANSparkMax motor : leftMotors) {
-            left.configure(motor);
+            motor.setInverted(leftIsInverted);
+            motor.burnFlash();
         }
 
-        rightEncoder.setReverseDirection(
-            ENCODER_INVERTED ^ right.INVERTED);
         for(CANSparkMax motor : rightMotors) {
-            right.configure(motor);
+            motor.setInverted(rightIsInverted);
+            motor.burnFlash();
         }
     }
- 
-    // private void setEncoderDistancePerPulse(double distance) {
-    //     rightEncoder.setDistancePerPulse(distance);
-    //     rightEncoder.reset();
 
-    //     leftEncoder.setDistancePerPulse(distance);
-    //     leftEncoder.reset();
-    // }
-
-
-   /*********************
+    /*********************
      * ENCODER FUNCTIONS *
      *********************/
 
     public double getLeftDistance() {
-        return leftEncoder.getDistance();
+        return leftEncoder.getPosition();
     }
 
     public double getRightDistance() {
-        return rightEncoder.getDistance();
+        return rightEncoder.getPosition();
     }
 
     public double getDistance() {
@@ -140,11 +126,11 @@ public class TankDrive extends SubsystemBase {
     }
 
     public double getLeftVelocity() {
-        return leftEncoder.getRate();
+        return leftEncoder.getVelocity();
     }
 
     public double getRightVelocity() {
-        return rightEncoder.getRate();
+        return rightEncoder.getVelocity();
     }
 
     public double getVelocity() {
@@ -191,11 +177,11 @@ public class TankDrive extends SubsystemBase {
     }
 
     public void tankDrive(double left, double right) {
-        tankDrive.tankDrive(left, right, false);
+        tankDrive.tankDrive(left, right, true);
     }
 
     public void arcadeDrive(double speed, double rotation) {
-        tankDrive.arcadeDrive(speed, rotation, false);
+        tankDrive.arcadeDrive(speed, rotation, true);
     }
 
     public void curvatureDrive(double xSpeed, double zRotation) {
@@ -225,16 +211,29 @@ public class TankDrive extends SubsystemBase {
     }
 
     public void reset(Pose2d location) {
-        navx.reset();
-        leftEncoder.reset();
-        rightEncoder.reset();
-
-        //might need
-        //odometry.resetPosition(location, DifferentialDriveWheelPositions, getRotation2d());
+        leftEncoder.setPosition(0);
+        rightEncoder.setPosition(0);
+        odometry.resetPosition(getGyroAngle(), 0, 0, location);
     }
 
     public void reset() {
         reset(getPose());
+    }
+
+    /*********************
+     * VOLTAGE FUNCTIONS *
+     *********************/
+
+    public void setLeftVoltage(double voltage) {
+        for (CANSparkMax motor : leftMotors) {
+            motor.setVoltage(voltage);
+        }
+    }
+
+    public void setRightVoltage(double voltage) {
+        for (CANSparkMax motor : rightMotors) {
+            motor.setVoltage(voltage);
+        }
     }
 
     @Override
