@@ -7,6 +7,16 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Shooter extends SubsystemBase{
+    public static Shooter instance;
+
+    static {
+        instance = new Shooter();
+    }
+
+    public static Shooter getInstance() {
+        return instance;
+    }
+
     public int leftMotorPort = 0;
     public int rightMotorPort = 1;
 
@@ -69,8 +79,11 @@ public class Shooter extends SubsystemBase{
 
     @Override
     public void periodic() {
-        leftMotor.setVoltage(leftController.calculate(targetLeftRPM));
-        rightMotor.setVoltage(rightController.calculate(targetRightRPM));
+        // leftMotor.setVoltage(leftController.calculate(targetLeftRPM));
+        // rightMotor.setVoltage(rightController.calculate(targetRightRPM));
+
+        leftMotor.set(targetLeftRPM);
+        rightMotor.set(targetRightRPM);
 
         SmartDashboard.putNumber("Shooter/Left Velocity", getLeftVelocity());
         SmartDashboard.putNumber("Shooter/Right Velocity", getRightVelocity());

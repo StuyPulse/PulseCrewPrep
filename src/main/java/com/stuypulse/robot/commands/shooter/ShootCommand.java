@@ -11,7 +11,7 @@ public class ShootCommand extends Command {
     private final double rightRPM;
 
     public ShootCommand(double leftRPM, double rightRPM) {
-        shooter = new Shooter();
+        shooter = Shooter.getInstance();
         this.leftRPM = leftRPM;
         this.rightRPM = rightRPM;
 
@@ -19,8 +19,8 @@ public class ShootCommand extends Command {
     }
 
     @Override
-    public void execute() {
+    public void initialize() {
         shooter.shoot(leftRPM, rightRPM);
-    }
+    } 
 
 }

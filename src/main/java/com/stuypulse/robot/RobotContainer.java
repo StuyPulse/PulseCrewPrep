@@ -30,7 +30,7 @@ public class RobotContainer {
     private final XboxController operator = new XboxController(OPERATOR);
     
     // Subsystem
-    private final Shooter shooter = new Shooter();
+    private final Shooter shooter = Shooter.getInstance();
 
     // Autons
     private static SendableChooser<Command> autonChooser = new SendableChooser<>();
